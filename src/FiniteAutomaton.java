@@ -2,10 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class FiniteAutomaton {
 
     Transitions[] transitions;
+    LinkedList tr;
     int numbTransition = 0;
 
     private void readFile() {
@@ -46,8 +48,10 @@ public class FiniteAutomaton {
     }
 
     public void addTransitions(Transitions edge) {
-        transitions[numbTransition] = edge;
+        tr = new LinkedList();
+        tr.add(edge);
         numbTransition++;
+
     }
 
     public void createAutomaton(char[] regularExpression) {
@@ -87,8 +91,9 @@ public class FiniteAutomaton {
     }
 
     public void printAutomaton() {
-        System.out.println("(" +transitions[0].stateOne + " , "+ transitions[0].symbol + " )" + " --> " +transitions[0].stateTwo);
-        System.out.println("(" +transitions[1].stateOne + " , "+ transitions[1].symbol + " )" + " --> " +transitions[1].stateTwo);
+        Transitions edges = (Transitions) tr.get(0);
+        System.out.println("(" +edges.stateOne + " , "+ edges.symbol + " )" + " --> " +edges.stateTwo);
+        //System.out.println("(" +transitions[1].stateOne + " , "+ transitions[1].symbol + " )" + " --> " +transitions[1].stateTwo);
     }
 
 
