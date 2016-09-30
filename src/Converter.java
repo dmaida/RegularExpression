@@ -2,8 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Stack;
 
 public class Converter {
@@ -44,17 +42,13 @@ public class Converter {
 
     public void createNFA(char symbol) {
         numbStates = numbStates + 2;
-
+        System.out.println(numbStates);
         Transitions newEdge = new Transitions(numbStates-1, numbStates, symbol, true);
         NFA newNFA = new NFA(numbStates-1, numbStates);
-
+        newNFA.totalStates = 2;
         newNFA.transitions.add(newEdge);
-
-
         stackOfNFA.push(newNFA);
-
     }
-
 
     public void createAutomaton(char[] regularExpression) {
         stackOfNFA = new Stack();
@@ -69,9 +63,7 @@ public class Converter {
                 NFA nfa2 = stackOfNFA.pop();
                 NFA nfa1 = stackOfNFA.pop();
 
-
                 NFA conNFA = NFA.concatenate(nfa1, nfa2);
-
                 stackOfNFA.push(conNFA);
 
             }
@@ -85,8 +77,9 @@ public class Converter {
                 NFA nfa1 = stackOfNFA.pop();
 
                 NFA unionNFA = NFA.union(nfa1, nfa2);
-                stackOfNFA.push(unionNFA);
+                numbStates = unionNFA.totalStates;
 
+                stackOfNFA.push(unionNFA);
             }
             else if (c == '*') {
 
@@ -96,9 +89,12 @@ public class Converter {
                 -The final states of FA1 are no longer final and s is the final state of FA2.
                  */
 
+                NFA nfa = stackOfNFA.pop();
+                NFA starNFA = NFA.star(nfa);
+                numbStates = starNFA.totalStates; // Should be equal
+                stackOfNFA.push(starNFA);
             }
             else {
-                if(c == 'a' | c == 'b' | c == 'c' | c == 'd' | c == 'e') {
                     if (c == 'a') {
                         createNFA('a');
                     }
@@ -114,8 +110,6 @@ public class Converter {
                     else if (c == 'e') {
                         createNFA('e');
                     }
-                }
-
             }
         }
     }
@@ -126,11 +120,8 @@ public class Converter {
             for (int j = 0; j < stackOfNFA.get(i).transitions.size(); j++) {
                 System.out.println("(" +stackOfNFA.get(i).transitions.get(j).stateOne + " , "+ stackOfNFA.get(i).transitions.get(j).symbol + " )" + " --> " +stackOfNFA.get(i).transitions.get(j).stateTwo);
             }
-
         }
-
     }
-
 
     public static void main(String args[]) {
         Converter stateMachine = new Converter();
