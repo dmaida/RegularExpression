@@ -15,7 +15,14 @@ public class NFA {
 
     public static NFA concatenate(NFA nfa1, NFA nfa2) {
         //Add a ε-transition from the final state of r1 to the start state of r2.e
+
+        /*
+            Add a ε-transition from the final state of r1 to the start state of r2.
+            The start state of FA3 is the start state of FA1 and the final state of FA3 is the final state of FA2.
+         */
         Transitions newT = new Transitions(nfa1.finalState, nfa2.startState, 'E',false);
+
+
 
         NFA conNFA = new NFA(nfa1.startState, nfa2.finalState);
         conNFA.transitions.add(newT);
@@ -72,8 +79,6 @@ public class NFA {
         }
         unionNFA.totalStates = nfa1.totalStates+nfa2.totalStates+2;
 
-        System.out.println("union = " + unionNFA.totalStates);
-
         return unionNFA;
     }
 
@@ -85,25 +90,22 @@ public class NFA {
             -The final states of FA1 are no longer final and s is the final state of FA2.
         */
 
-        NFA newStart = new NFA(nfa.finalState+1, nfa.finalState+1);
-        NFA starNFA = new NFA(nfa.startState, nfa.finalState+1);
-        Transitions newEdge = new Transitions(newStart.startState, nfa.startState, 'E', true);
-        Transitions secondNewEdge = new Transitions(nfa.finalState, newStart.startState, 'e', true);
-
-        nfa.transitions.add(secondNewEdge);
-
-        newStart.transitions.add(newEdge);
+        Transitions newEdge = new Transitions(nfa.finalState+1, nfa.startState, 'E', false);
+        Transitions secondNewEdge = new Transitions(nfa.finalState, nfa.finalState+1, 'E', true);
 
         for (int i = 0; i <nfa.transitions.size() ; i++) {
-            nfa.transitions.get(i).isFinalState = false;
-            starNFA.transitions.add(nfa.transitions.get(i));
-        }
-        for (int i = 0; i < newStart.transitions.size(); i++) {
-            starNFA.transitions.add(newStart.transitions.get(i));
-        }
 
-        starNFA.totalStates = nfa.totalStates+1;
+            if (nfa.transitions.get(i).isFinalState) {
+                nfa.transitions.get(i).isFinalState = false;
+            }
 
-        return starNFA;
+        }
+        nfa.startState = nfa.finalState+1;
+        nfa.finalState = nfa.finalState+1;
+        nfa.transitions.add(newEdge);
+        nfa.transitions.add(secondNewEdge);
+        nfa.totalStates++;
+
+        return nfa;
     }
 }

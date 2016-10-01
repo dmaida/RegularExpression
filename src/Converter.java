@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Stack;
 
 public class Converter {
@@ -42,7 +45,6 @@ public class Converter {
 
     public void createNFA(char symbol) {
         numbStates = numbStates + 2;
-        System.out.println(numbStates);
         Transitions newEdge = new Transitions(numbStates-1, numbStates, symbol, true);
         NFA newNFA = new NFA(numbStates-1, numbStates);
         newNFA.totalStates = 2;
@@ -110,6 +112,9 @@ public class Converter {
                     else if (c == 'e') {
                         createNFA('e');
                     }
+                    else if (c == 'E') {
+                        createNFA('E');
+                    }
             }
         }
     }
@@ -123,9 +128,33 @@ public class Converter {
         }
     }
 
+    public void sortAutomaton() {
+
+
+        ArrayList<Transitions> sortedList = new ArrayList<>();
+
+        Comparator<Transitions> comp = new Comparator<Transitions>() {
+            @Override
+            public int compare(Transitions t1, Transitions t2) {
+
+                return t1.stateOne-t2.stateOne;
+            }
+        };
+
+        for (int i = 0; i < stackOfNFA.size(); i++) {
+            for (int j = 0; j < stackOfNFA.get(i).transitions.size(); j++) {
+                stackOfNFA.get(i).transitions.sort(comp);
+
+            }
+        }
+    }
+
     public static void main(String args[]) {
         Converter stateMachine = new Converter();
         stateMachine.readFile();
+        System.out.println("start State  = " +stateMachine.stackOfNFA.get(0).startState);
+        System.out.println("final State  = " +stateMachine.stackOfNFA.get(0).finalState);
+        stateMachine.sortAutomaton();
         stateMachine.printAutomaton();
 
     }
